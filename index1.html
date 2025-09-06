@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Attendance Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #d0e7f9, #fff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #004aad;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 15px;
+      border: 1.8px solid #ccd6dd;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #ff6600;
+      outline: none;
+      box-shadow: 0 0 6px rgba(255, 102, 0, 0.3);
+    }
+
+    button.login-btn {
+      width: 100%;
+      padding: 14px;
+      background-color: #004aad;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button.login-btn:hover {
+      background-color: #003380;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .links {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: #004aad;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 500px) {
+      .card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1> Attendance Login </h1>
+    <p class="subtitle">Access your dashboard</p>
+
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <select id="role" required>
+        <option value="">Select Role</option>
+       <!-----<option value="admin">Admin</option>-->
+        <option value="teacher">Teacher</option>
+        <option value="student">Student</option>
+        <option value="parent">Parent</option>
+      </select>
+      <button type="submit" class="login-btn">Login</button>
+      <p id="error-message" class="error-message"></p>
+    </form>
+
+    <div class="links">
+      <a href="#">Forgot Password?</a> | <a href="#">Need Help?</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value;
+      const errorMessage = document.getElementById("error-message");
+
+      const users = {
+        //admin: { username: "admin", password: "admin123", redirect: "admin.html" },
+        teacher: { username: "teacher1", password: "teach123", redirect: "teacher_atten.html" },
+        student: { username: "student1", password: "stud123", redirect: "Students_atten.html" },
+        parent: { username: "parent1", password: "parent123", redirect: "Parent_atten.html" }
+      };
+
+      if(users[role] && username === users[role].username && password === users[role].password) {
+        window.location.href = users[role].redirect;
+      } else {
+        errorMessage.textContent = "Invalid credentials. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>

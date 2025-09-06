@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Attendance Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f8ff; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #004aad;
+      padding: 15px 20px;
+      color: white;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+    }
+    .header img { width: 50px; height: 50px; margin-right: 10px; }
+    .logout-button {
+      background-color: #ff4444;
+      color: white;
+      padding: 8px 15px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .logout-button:hover { background-color: #cc0000; }
+    .marquee {
+      font-size: 18px;
+      color: #004aad;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+      padding: 5px;
+      background-color: #e6f2ff;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .parent-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+    }
+    .info-item {
+      flex: 1;
+      padding: 0 10px;
+    }
+    .info-item strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #004aad;
+    }
+    .student-select {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #e6f2ff;
+      border-radius: 5px;
+    }
+    select, button {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 15px;
+      box-sizing: border-box;
+      margin: 5px 0;
+    }
+    button {
+      background-color: #004aad;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover { background-color: #003d7a; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th { 
+      background-color: #004aad; 
+      color: white; 
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+    tr:hover { background-color: #e6f7ff; }
+    .low-attendance { color: red; font-weight: bold; }
+    .good-attendance { color: green; font-weight: bold; }
+    .notification-panel {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #fff3cd;
+      border-left: 5px solid #ffc107;
+      display: none;
+    }
+    .notification-panel h3 {
+      margin-top: 0;
+      color: #856404;
+    }
+    .alert-panel {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f8d7da;
+      border-left: 5px solid #dc3545;
+      display: none;
+    }
+    .alert-panel h3 {
+      margin-top: 0;
+      color: #721c24;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin: 20px 0;
+    }
+    .calendar-header {
+      background-color: #004aad;
+      color: white;
+      text-align: center;
+      padding: 5px;
+      font-weight: bold;
+    }
+    .calendar-day {
+      border: 1px solid #ddd;
+      padding: 5px;
+      min-height: 60px;
+    }
+    .present {
+      background-color: #d4edda;
+    }
+    .absent {
+      background-color: #f8d7da;
+    }
+    .holiday {
+      background-color: #fff3cd;
+    }
+    .current-day {
+      border: 2px solid #004aad;
+    }
+    .day-number {
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+    .attendance-status {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h4>AMRITA ATTENDANCE SYSTEM</h4>
+    <pre>                                                        </pre>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+  
+  <div class="marquee">
+    Welcome to Parent Attendance Monitoring System
+  </div>
+  
+  <div class="container">
+    <div class="parent-info">
+      <div class="info-item">
+        <strong>Parent Name</strong>
+        <span id="parentName">Mrs. Jane Doe</span>
+      </div>
+      <div class="info-item">
+        <strong>Mobile Number</strong>
+        <span id="parentMobile">9876543211</span>
+      </div>
+      <div class="info-item">
+        <strong>Email</strong>
+        <span id="parentEmail">parent@example.com</span>
+      </div>
+    </div>
+    
+    <div class="student-select">
+      <h3>Select Student</h3>
+      <select id="studentSelect">
+        <option value="">-- Select Student --</option>
+                
+      </select>
+      <button onclick="loadStudentData()">Load Attendance</button>
+    </div>
+    
+    <div class="notification-panel" id="lowAttendanceAlert">
+      <h3>Attendance Alert</h3>
+      <p>Your child's attendance is below 75% in some courses. Please ensure they attend classes regularly.</p>
+    </div>
+    
+    <div class="alert-panel" id="absentTodayAlert">
+      <h3>Today's Absence Notice</h3>
+      <p>Your child was marked absent today. Please verify with them if this is correct.</p>
+    </div>
+    
+    <div id="studentDetails" style="display: none;">
+      <div class="student-info">
+        <div class="info-item">
+          <strong>Student Name</strong>
+          <span id="studentName">-</span>
+        </div>
+        <div class="info-item">
+          <strong>Roll Number</strong>
+          <span id="studentRoll">-</span>
+        </div>
+        <div class="info-item">
+          <strong>Class</strong>
+          <span id="studentClass">-</span>
+        </div>
+        <div class="info-item">
+          <strong>Semester</strong>
+          <span id="studentSem">-</span>
+        </div>
+      </div>
+      
+      <h2>Attendance Summary</h2>
+      <table id="attendanceTable">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Total Classes</th>
+            <th>Percentage</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      
+      <h2>Monthly Attendance Calendar</h2>
+      <div class="calendar" id="attendanceCalendar"></div>
+      
+      <div style="margin-top: 20px;">
+        <button onclick="requestMeeting()">Request Meeting with Faculty</button>
+        <button onclick="acknowledgeAlerts()" style="background-color: #28a745;">Acknowledge Alerts</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Parent data
+    const parent = {
+      name: "Mrs. Jane Doe",
+      mobile: "9876543211",
+      email: "parent@example.com",
+      students: [
+  {
+    rollNumber: "CB.SC.U4CSE20001",
+    name: "HEM",
+    mobile: "9876543210",
+    class: "CSE-E",
+    semester: "II"
+  }
+]
+    };
+    
+    // Set parent info
+    document.getElementById('parentName').textContent = parent.name;
+    document.getElementById('parentMobile').textContent = parent.mobile;
+    document.getElementById('parentEmail').textContent = parent.email;
+    
+    // Populate student dropdown
+    const studentSelect = document.getElementById('studentSelect');
+    parent.students.forEach(student => {
+      const option = document.createElement('option');
+      option.value = student.rollNumber;
+      option.textContent = `${student.name} (${student.class})`;
+      studentSelect.appendChild(option);
+    });
+    
+    // Load student data when selected
+    function loadStudentData() {
+      const rollNumber = studentSelect.value;
+      if (!rollNumber) {
+        alert('Please select a student');
+        return;
+      }
+      
+      const student = parent.students.find(s => s.rollNumber === rollNumber);
+      if (!student) return;
+      
+      // Display student info
+      document.getElementById('studentName').textContent = student.name;
+      document.getElementById('studentRoll').textContent = student.rollNumber;
+      document.getElementById('studentClass').textContent = student.class;
+      document.getElementById('studentSem').textContent = student.semester;
+      
+      document.getElementById('studentDetails').style.display = 'block';
+      loadAttendanceData(student);
+      generateCalendar(student);
+      checkAlerts(student);
+    }
+    
+    // Load attendance data
+    function loadAttendanceData(student) {
+      const attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+      const tableBody = document.querySelector("#attendanceTable tbody");
+      tableBody.innerHTML = "";
+      
+      // Get all courses for this student
+      const courses = [...new Set(attendanceData
+        .filter(a => a.rollNumber === student.rollNumber)
+        .map(a => a.course)
+      )];
+      
+      if (courses.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center;">No attendance records found</td>
+          </tr>
+        `;
+        return;
+      }
+      
+      let hasLowAttendance = false;
+      const threshold = 0.75; // 75% threshold
+      
+      courses.forEach(course => {
+        const courseAttendance = attendanceData.filter(a => 
+          a.rollNumber === student.rollNumber && a.course === course
+        );
+        
+        const presentCount = courseAttendance.filter(a => a.status === 'Present').length;
+        const absentCount = courseAttendance.filter(a => a.status === 'Absent').length;
+        const totalClasses = courseAttendance.length;
+        const percentage = totalClasses > 0 ? (presentCount / totalClasses) : 0;
+        
+        if (percentage < threshold) {
+          hasLowAttendance = true;
+        }
+        
+        tableBody.innerHTML += `
+          <tr>
+            <td>${course}</td>
+            <td>${presentCount}</td>
+            <td>${absentCount}</td>
+            <td>${totalClasses}</td>
+            <td class="${percentage < threshold ? 'low-attendance' : 'good-attendance'}">
+              ${Math.round(percentage * 100)}%
+            </td>
+            <td>
+              ${percentage < threshold ? 
+                '<span class="low-attendance">Low Attendance</span>' : 
+                '<span class="good-attendance">Good</span>'
+              }
+            </td>
+          </tr>
+        `;
+      });
+      
+      // Show low attendance alert if needed
+      document.getElementById('lowAttendanceAlert').style.display = hasLowAttendance ? 'block' : 'none';
+    }
+    
+    // Generate attendance calendar
+    function generateCalendar(student) {
+      const attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+      const calendar = document.getElementById('attendanceCalendar');
+      calendar.innerHTML = "";
+      
+      // Add calendar headers
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      days.forEach(day => {
+        calendar.innerHTML += `<div class="calendar-header">${day}</div>`;
+      });
+      
+      // Get current month and year
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const currentDay = now.getDate();
+      
+      // Get first day of month and total days
+      const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      
+      // Add empty cells for days before first day of month
+      for (let i = 0; i < firstDay; i++) {
+        calendar.innerHTML += `<div class="calendar-day"></div>`;
+      }
+      
+      // Add days of month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayAttendance = attendanceData.filter(a => 
+          a.rollNumber === student.rollNumber && 
+          a.date === dateStr
+        );
+        
+        let status = '';
+        let dayClass = '';
+        
+        if (dayAttendance.length > 0) {
+          const present = dayAttendance.some(a => a.status === 'Present');
+          status = present ? 'Present' : 'Absent';
+          dayClass = present ? 'present' : 'absent';
+        }
+        
+        // Mark weekends/holidays (sample - would come from academic calendar)
+        const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          dayClass = 'holiday';
+          status = 'Holiday';
+        }
+        
+        // Highlight current day
+        if (day === currentDay) {
+          dayClass += ' current-day';
+        }
+        
+        calendar.innerHTML += `
+          <div class="calendar-day ${dayClass}">
+            <div class="day-number">${day}</div>
+            <div class="attendance-status">${status}</div>
+          </div>
+        `;
+      }
+    }
+    
+    // Check for alerts (low attendance, today's absence)
+    function checkAlerts(student) {
+      const attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Check if absent today
+      const absentToday = attendanceData.some(a => 
+        a.rollNumber === student.rollNumber && 
+        a.status === 'Absent' && 
+        a.date === today
+      );
+      
+      document.getElementById('absentTodayAlert').style.display = absentToday ? 'block' : 'none';
+    }
+    
+    // Request meeting with faculty
+    function requestMeeting() {
+      const studentName = document.getElementById('studentName').textContent;
+      const reason = prompt(`Enter reason for requesting meeting about ${studentName}:`);
+      if (reason) {
+        alert(`Meeting request submitted for ${studentName}. Reason: ${reason}\nFaculty will contact you shortly.`);
+      }
+    }
+    
+    // Acknowledge alerts
+    function acknowledgeAlerts() {
+      document.getElementById('lowAttendanceAlert').style.display = 'none';
+      document.getElementById('absentTodayAlert').style.display = 'none';
+      alert('Alerts acknowledged. Thank you for your attention.');
+    }
+    
+    function logout() {
+      alert('Logging out...');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

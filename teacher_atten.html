@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Attendance Update</title>
+  <style>
+    body { font-family: Arial, sans-serif;
+         margin: 0; 
+         padding: 0; 
+         background-color: #f0f8ff;
+         }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #004aad;
+      padding: 15px 20px;
+      color: white;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+    }
+    .header img {
+         width: 50px; 
+         height: 50px;
+          margin-right: 10px; }
+    .logout-button {
+      background-color: #ff4444;
+      color: white;
+      padding: 8px 15px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .logout-button:hover {
+         background-color: #cc0000;
+         }
+    .marquee {
+      font-size: 18px;
+      color: #004aad;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+      padding: 5px;
+      background-color: #e6f2ff;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+    input, select, button {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 5px;
+    }
+    button:hover { background-color: #218838; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    th { 
+      background-color: #004aad; 
+      color: white; 
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) { background-color: #f2f2f2; }
+    tr:hover { background-color: #e6f7ff; }
+    .alert {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      display: none;
+    }
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+    }
+    .stat-box {
+      text-align: center;
+      padding: 10px;
+      flex: 1;
+      margin: 0 5px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h4>AMRITA ATTENDANCE SYSTEM</h4>
+    <pre>                                                        </pre>
+    <button class="logout-button" onclick="logout()">Logout</button>
+  </div>
+  
+  <div class="marquee">
+    Welcome to Teacher Attendance Management System @Amrita
+  </div>
+  
+  <div class="container">
+    <h2>Attendance Management</h2>
+    
+     
+    
+    <div class="alert alert-warning" id="examAlert">
+      <strong>Exam Notice:</strong> Semester exams begin in 15th of April. Please review attendance records.
+    </div>
+    
+    <div class="form-group">
+      <label for="date">Date:</label>
+      <input type="date" id="date" value="">
+    </div>
+    
+    <div class="form-group">
+      <label for="course">Select Course:</label>
+      <select id="course">
+        <option value="">-- Select Course --</option>
+        <option value="Object Oriented Programming">Object Oriented Programming</option>
+        <option value="User Interface Design">User Interface Design</option>
+        <option value="Discrete Mathematics">Discrete Mathematics</option>
+        <option value="Linear Algebra">Linear Algebra</option>
+        <option value="Modern Physics">Modern Physics</option>
+        <option value="Manufacturing Practice">Manufacturing Practice</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="class">Select Class:</label>
+      <select id="class">
+        <option value="">-- Select Class --</option>
+        <option value="CSE-A">CSE-E</option>
+        <option value="CSE-B">CSE-B</option>
+        <option value="ECE-A">ECE-A</option>
+        <option value="EEE-A">EEE-A</option>
+      </select>
+    </div>
+    
+    <button onclick="loadClassAttendance()">Load Students</button>
+    
+    <h3>Class Attendance</h3>
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Roll Number</th>
+          <th>Student Name</th>
+          <th>Status</th>
+          <th>Total Attendance</th>
+          <th>Percentage</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    
+    <div style="margin-top: 20px;">
+      <button onclick="saveAttendance()" style="background-color: #007bff;">Save Attendance</button>
+      <button onclick="sendLowAttendanceAlerts()" style="background-color: #ffc107; color: #212529;">Send Low Attendance Alerts</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize with sample data
+    let students = [
+      { rollNumber: "CB.SC.U4CSE20001", name: "HEM", mobile: "9876543210", parentMobile: "9876543211", attendance: [] },
+      { rollNumber: "CB.SC.U4CSE20002", name: "Student Two", mobile: "9876543212", parentMobile: "9876543213", attendance: [] },
+      { rollNumber: "CB.SC.U4CSE20003", name: "Student Three", mobile: "9876543214", parentMobile: "9876543215", attendance: [] },
+      { rollNumber: "CB.SC.U4CSE20004", name: "Student Four", mobile: "9876543216", parentMobile: "9876543217", attendance: [] },
+      { rollNumber: "CB.SC.U4CSE20005", name: "Student Five", mobile: "9876543218", parentMobile: "9876543219", attendance: [] }
+    ];
+    
+    // Load attendance data from localStorage or initialize
+    let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+    
+    // Check if exams are in 10 days (logic)
+    const examAlert = document.getElementById('examAlert');
+    const daysToExam = 10; // This would normally come from a calendar
+    if (daysToExam <= 10) {
+      examAlert.style.display = 'block';
+    }
+    
+    // Load class attendance when course and class are selected
+    function loadClassAttendance() {
+      const course = document.getElementById('course').value;
+      const classGroup = document.getElementById('class').value;
+      const date = document.getElementById('date').value;
+      
+      if (!course || !classGroup) {
+        alert('Please select both course and class');
+        return;
+      }
+      
+      const tableBody = document.querySelector("#attendanceTable tbody");
+      tableBody.innerHTML = "";
+      
+      // Filter students (in real app, this would be by class)
+      students.forEach(student => {
+        // Get attendance for this course
+        const courseAttendance = attendanceData.filter(a => 
+          a.rollNumber === student.rollNumber && a.course === course
+        );
+        
+        const presentCount = courseAttendance.filter(a => a.status === 'Present').length;
+        const totalClasses = courseAttendance.length;
+        const percentage = totalClasses > 0 ? Math.round((presentCount / totalClasses) * 100) : 0;
+        
+        // Check if already marked for today
+        const todayMarked = attendanceData.some(a => 
+          a.rollNumber === student.rollNumber && 
+          a.course === course && 
+          a.date === date
+        );
+        
+        const status = todayMarked ? 
+          attendanceData.find(a => 
+            a.rollNumber === student.rollNumber && 
+            a.course === course && 
+            a.date === date
+          ).status : 'Present'; // Default to Present
+        
+        tableBody.innerHTML += `
+          <tr data-roll="${student.rollNumber}" data-course="${course}">
+            <td>${student.rollNumber}</td>
+            <td>${student.name}</td>
+            <td>
+              <select class="status-select" ${todayMarked ? 'disabled' : ''}>
+                <option value="Present" ${status === 'Present' ? 'selected' : ''}>Present</option>
+                <option value="Absent" ${status === 'Absent' ? 'selected' : ''}>Absent</option>
+              </select>
+            </td>
+            <td>${presentCount}/${totalClasses}</td>
+            <td style="color: ${percentage < 75 ? 'red' : 'green'}; font-weight: bold;">
+              ${percentage}%
+            </td>
+            <td>
+              ${todayMarked ? 
+                '<span style="color:green;">Marked</span>' : 
+                '<button class="mark-btn" onclick="markSingleStudent(this)">Mark</button>'
+              }
+            </td>
+          </tr>
+        `;
+      });
+    }
+    
+    // Mark attendance for a single student
+    function markSingleStudent(button) {
+      const row = button.closest('tr');
+      const rollNumber = row.dataset.roll;
+      const course = row.dataset.course;
+      const date = document.getElementById('date').value;
+      const status = row.querySelector('.status-select').value;
+      
+      // Check if already exists
+      const existingIndex = attendanceData.findIndex(a => 
+        a.rollNumber === rollNumber && a.course === course && a.date === date
+      );
+      
+      if (existingIndex >= 0) {
+        attendanceData[existingIndex].status = status;
+      } else {
+        attendanceData.push({
+          rollNumber,
+          course,
+          date,
+          status,
+          markedAt: new Date().toISOString()
+        });
+      }
+      
+      localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+      
+      // Find student to send notification if absent
+      if (status === 'Absent') {
+        const student = students.find(s => s.rollNumber === rollNumber);
+        if (student) {
+          alert(`Notification sent to student ${student.name} (${student.mobile}) about absence in ${course}`);
+        }
+      }
+      
+      loadClassAttendance(); // Refresh view
+    }
+    
+    // Save attendance for all students
+    function saveAttendance() {
+      const date = document.getElementById('date').value;
+      const course = document.getElementById('course').value;
+      
+      const rows = document.querySelectorAll("#attendanceTable tbody tr");
+      rows.forEach(row => {
+        const rollNumber = row.dataset.roll;
+        const status = row.querySelector('.status-select').value;
+        
+        // Check if already exists
+        const existingIndex = attendanceData.findIndex(a => 
+          a.rollNumber === rollNumber && a.course === course && a.date === date
+        );
+        
+        if (existingIndex >= 0) {
+          attendanceData[existingIndex].status = status;
+        } else {
+          attendanceData.push({
+            rollNumber,
+            course,
+            date,
+            status,
+            markedAt: new Date().toISOString()
+          });
+        }
+        
+        // Send notification if absent
+        if (status === 'Absent') {
+          const student = students.find(s => s.rollNumber === rollNumber);
+          if (student) {
+            console.log(`Notification sent to student ${student.name} (${student.mobile}) about absence in ${course}`);
+          }
+        }
+      });
+      
+      localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+      alert('Attendance saved successfully!');
+      loadClassAttendance(); // Refresh view
+    }
+    
+    // Send alerts for students with low attendance
+    function sendLowAttendanceAlerts() {
+  const course = document.getElementById('course').value;
+  if (!course) {
+    alert('Please select a course first');
+    return;
+  }
+
+  const threshold = 0.75; // 75% threshold
+
+  students.forEach(student => {
+    const courseAttendance = attendanceData.filter(a =>
+      a.rollNumber === student.rollNumber && a.course === course
+    );
+
+    const totalClasses = courseAttendance.length;
+    const presentCount = courseAttendance.filter(a => a.status === 'Present').length;
+
+    if (totalClasses > 0) {
+      const percentage = presentCount / totalClasses;
+
+      if (percentage < threshold) {
+        const percentDisplay = Math.round(percentage * 100);
+        
+        // Alert to parent
+        alert(`Low attendance alert sent to parent of ${student.name} (${student.parentMobile}) - Current attendance: ${percentDisplay}% in ${course}`);
+        
+        // Console log for faculty
+        console.log(`Faculty alert: ${student.name} has low attendance in ${course}`);
+      }
+    }
+  });
+
+  alert('Low attendance alerts sent successfully!');
+}
+
+       
+    
+    function logout() {
+      // In a real app, this would redirect to login page
+      alert('Logging out...');
+      window.location.href = 'index.html';
+    }
+    
+    // Initialize with today's date
+    window.onload = function() {
+      document.getElementById('date').value = today;
+    };
+  </script>
+</body>
+</html>
